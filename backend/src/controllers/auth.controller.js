@@ -97,3 +97,56 @@ export const logout = (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePicture } = req.body;
+    const userId = req.user._id;
+
+    // Validate input
+    if (!profilePicture) {
+      return res.status(400).json({ message: "Profile picture is required" });
+    }
+
+    // upload and convert the image to base64
+    // Assuming profilePicture is a base64 string or a URL
+    if (typeof profilePicture !== "string") {
+      return res
+        .status(400)
+        .json({ message: "Invalid profile picture format" });
+    }
+
+    // Find user and update profile picture
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { profilePicture },
+      { new: true, runValidators: true },
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profilePicture: user.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const checkAuth = (req, res) => {
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    console.error("Check auth error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

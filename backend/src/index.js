@@ -17,16 +17,16 @@ const PORT = process.env.PORT || 8080;
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true, // Allow cookies to be sent with requests
-  }),
-);
 
 // Listening to the server and connecting to the database
 app.listen(PORT, () => {
